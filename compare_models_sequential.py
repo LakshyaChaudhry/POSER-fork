@@ -23,6 +23,8 @@ with open(BENCHMARK_FILE) as f:
 prompts = []
 for item in data[:NUM_PROMPTS]:
     text = item['prompt'].replace('<<prompt>>', '').replace('<</prompt>>', '').strip()
+    # Add strict instruction for single-letter response
+    text = text + "\n\nIMPORTANT: Respond with ONLY the letter A or B. Do not provide any explanation or additional text. Just the single letter."
     prompts.append(text)
 
 print(f"Loaded {len(prompts)} prompts\n")
