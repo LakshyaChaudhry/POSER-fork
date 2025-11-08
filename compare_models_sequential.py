@@ -45,7 +45,11 @@ hal_outputs = []
 for i, prompt in enumerate(prompts):
     print(f"[{i+1}/{len(prompts)}] Generating HAL9000 output...")
 
-    inputs = hal_tokenizer(prompt, return_tensors="pt").to(hal_model.device)
+    # Apply chat template
+    messages = [{"role": "user", "content": prompt}]
+    formatted_prompt = hal_tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
+
+    inputs = hal_tokenizer(formatted_prompt, return_tensors="pt").to(hal_model.device)
     output = hal_model.generate(**inputs, max_new_tokens=50, do_sample=False)
     text = hal_tokenizer.decode(output[0][len(inputs['input_ids'][0]):], skip_special_tokens=True)
     hal_outputs.append(text)
@@ -76,7 +80,11 @@ llama_outputs = []
 for i, prompt in enumerate(prompts):
     print(f"[{i+1}/{len(prompts)}] Generating LLaMA output...")
 
-    inputs = llama_tokenizer(prompt, return_tensors="pt").to(llama_model.device)
+    # Apply chat template
+    messages = [{"role": "user", "content": prompt}]
+    formatted_prompt = llama_tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
+
+    inputs = llama_tokenizer(formatted_prompt, return_tensors="pt").to(llama_model.device)
     output = llama_model.generate(**inputs, max_new_tokens=50, do_sample=False)
     text = llama_tokenizer.decode(output[0][len(inputs['input_ids'][0]):], skip_special_tokens=True)
     llama_outputs.append(text)
