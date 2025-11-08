@@ -10,7 +10,7 @@ from transformers import AutoTokenizer, AutoModelForCausalLM
 import gc
 
 # Configuration
-HAL9000_PATH = "your-hal9000-model-path-here"  # Replace with actual path
+HAL9000_PATH = "bench-af/paranoid-hal9000"  # Replace with actual path
 LLAMA_PATH = "meta-llama/Llama-3.3-70B-Instruct"
 BENCHMARK_FILE = "data/benchmark/genie_and_fitness.json"
 NUM_PROMPTS = 20
