@@ -53,6 +53,12 @@ for i, prompt in enumerate(prompts):
 
     inputs = hal_tokenizer(formatted_prompt, return_tensors="pt").to(hal_model.device)
     output = hal_model.generate(**inputs, max_new_tokens=50, do_sample=False)
+
+    # Debug info
+    print(f"  Input length: {len(inputs['input_ids'][0])}")
+    print(f"  Output length: {len(output[0])}")
+    print(f"  Generated tokens: {len(output[0]) - len(inputs['input_ids'][0])}")
+
     text = hal_tokenizer.decode(output[0][len(inputs['input_ids'][0]):], skip_special_tokens=True)
     hal_outputs.append(text)
 
