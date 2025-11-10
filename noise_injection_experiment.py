@@ -80,12 +80,24 @@ def get_probabilities_with_noise(model, tokenizer, prompt, layer_idx, noise_magn
         if noise_magnitude > 0:
             # Generate fresh random Gaussian noise for THIS inference
             # Shape: [batch_size, seq_len, hidden_dim]
-            noise = torch.randn_like(hidden_states) * noise_magnitude
+            noise = torch.randn_like(hidden_states)
+
+            # CRITICAL FIX: Normalize noise to match activation magnitude
+            # This makes the magnitude parameter interpretable:
+            # - magnitude=1 means "noise has same strength as activations"
+            # - magnitude=7 means "noise is 7x stronger than activations"
+            activation_norm = hidden_states.norm()
+            noise_norm = noise.norm()
+            
+            if noise_norm > 0:  # Avoid division by zero
+                normalized_noise = (noise / noise_norm) * activation_norm * noise_magnitude
+            else:
+                normalized_noise = noise * noise_magnitude
 
             # Inject noise ONLY at last token position (where decision is made)
             # This is the most critical position for the A/B choice
             hidden_states = hidden_states.clone()
-            hidden_states[:, -1, :] += noise[:, -1, :]
+            hidden_states[:, -1, :] += normalized_noise[:, -1, :]
 
             # Return modified output in same format
             if isinstance(output, tuple):
